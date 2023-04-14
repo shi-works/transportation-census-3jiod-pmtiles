@@ -1,4 +1,6 @@
 # transportation-census-3jiod-pmtiles
+- 本データは、政府統計窓口（e-stat）にて公開されている、[第13回大都市交通センサスの3次ODデータ（2021年12月某日1日目及び2021年12月某日2日目）](https://www.e-stat.go.jp/stat-search/files?page=1&toukei=00600020&tstat=000001103355)をもとに、入出場駅間トリップ数を集計するとともに、集計データを[tippecanoe](https://github.com/felt/tippecanoe)で[PMTiles形式](https://github.com/protomaps/PMTiles)に変換したデータになります。
+- オープンソースソフトウェアで構築
 
 ## デモサイト（MapLibre GL JS）
 - 3次ODデータ（2021年12月某日2日目）
