@@ -1,16 +1,16 @@
 # transportation-census-3jiod-pmtiles
-- 本データは、政府統計窓口（e-stat）にて公開されている、[第13回大都市交通センサスの3次ODデータ（2021年12月某日1日目及び2021年12月某日2日目）](https://www.e-stat.go.jp/stat-search/files?page=1&toukei=00600020&tstat=000001103355)の入出場駅間トリップ数を集計するとともに、集計データを[tippecanoe](https://github.com/felt/tippecanoe)で[PMTiles形式](https://github.com/protomaps/PMTiles)に変換したデータになります。
+- 本データは、政府統計窓口（e-stat）にて公開されている、[第13回大都市交通センサスの3次ODデータ（2021年12月某日1日目及び2021年12月某日2日目）](https://www.e-stat.go.jp/stat-search/files?page=1&toukei=00600020&tstat=000001103355)の入出場駅間トリップ数（以下、3次OD集計データ）を集計するとともに、3次OD集計データを[tippecanoe](https://github.com/felt/tippecanoe)で[PMTiles形式](https://github.com/protomaps/PMTiles)に変換したデータになります。
 - オープンソースソフトウェアで構築
 
 ## デモサイト（MapLibre GL JS）
-- 3次ODデータ（2021年12月某日2日目）
+- 3次ODデータ集計（2021年12月某日2日目）
 - https://web-map-maplibre.s3.ap-northeast-1.amazonaws.com/transportation-census-map/index.html
 - サンプル画像
 ![image](https://user-images.githubusercontent.com/71203808/232016307-b0e54eb0-0108-4e31-9ee9-4ef519ba187f.png)
 
 ## データの加工
 ### 3jiod_od_pattern_count.py
-- 3次ODデータのマージ及び入出場駅間トリップ数（以下、3次OD集計データ）の集計を行うプログラムです。
+- 3次ODデータのマージ及び入出場駅間トリップ数の集計を行うプログラムです。
 #### 使用データ
 - 3次ODデータ（2021年12月某日1日目）及び3次ODデータ（2021年12月某日2日目）
 - `https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/transportation-census/3jiod/3jiod.7z`,966.0MB
