@@ -13,8 +13,8 @@
 - `https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/+transportation-census/3jiod/01_3jiod_od_pattern_count/out/202112_2/202112_2_3jiod_od_pattern_count.csv`,61.9MB
 
 ### csvfile-add-coordinate.py
-- 3次ODデータに国土数値情報の鉄道データの駅の座標を付与するプログラムです。
-- なお、駅の座標データは、国土数値情報の鉄道データのラインデータを重心に変換したデータになります。
+- 3次ODデータに国土数値情報の鉄道データの駅座標を付与するプログラムです。
+- なお、駅座標データは、国土数値情報の鉄道データのラインデータを重心に変換したデータになります。
 #### 使用データ
 - 国土数値情報の鉄道データ
 
