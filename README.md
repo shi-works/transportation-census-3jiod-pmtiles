@@ -1,8 +1,10 @@
 # transportation-census-3jiod-pmtiles
 
 ## デモサイト（MapLibre GL JS）
-### 3次ODデータ（2021年12月某日2日目）
+- 3次ODデータ（2021年12月某日2日目）
 https://web-map-maplibre.s3.ap-northeast-1.amazonaws.com/transportation-census-map/index.html
+- サンプル画像
+![image](https://user-images.githubusercontent.com/71203808/232016307-b0e54eb0-0108-4e31-9ee9-4ef519ba187f.png)
 
 ## データの加工
 ### 3jiod_od_pattern_count.py
