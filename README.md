@@ -65,7 +65,7 @@
 - `https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/transportation-census/3jiod/02_3jiod_od_pattern_count_add_coordinate/out/202112_2_3jiod.pmtiles`,675.0MB
 
 ## ライセンス
-本データセットは[CC-BY-4.0](https://github.com/shi-works/traffic-accident-pmtiles/blob/main/LICENSE)で提供されます。使用の際には本レポジトリへのリンクを提示してください。
+本データセット（使用データ及び出力結果）は[CC-BY-4.0](https://github.com/shi-works/traffic-accident-pmtiles/blob/main/LICENSE)で提供されます。使用の際には本レポジトリへのリンクを提示してください。
 
 また、本データセットは、第13回大都市交通センサスの3次ODデータを加工して作成したものです。本データセットの使用・加工にあたっては、[国土交通省のリンク・著作権・免責事項](https://www.mlit.go.jp/link.html)を必ずご確認ください。
 
