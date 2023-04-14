@@ -44,12 +44,12 @@
 - 2021年12月某日2日目
 - `https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/transportation-census/3jiod/02_3jiod_od_pattern_count_add_coordinate/out/202112_2_3jiod_od_pattern_count_add_coordinate.wkt`,129.3MB
 
-### FlatGeoBuf
-- WKT形式（LINESTRING）に変換した3次ODデータをFlatGeoBuf形式に変換したデータです。
+### GeoJSON
+- WKT形式（LINESTRING）の3次ODデータをGeoJSON形式に変換したデータです。
 - 2021年12月某日1日目
-- `https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/transportation-census/3jiod/02_3jiod_od_pattern_count_add_coordinate/out/202112_1_3jiod_od_pattern_count_add_coordinate.fgb`,243.4MB
+- `https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/transportation-census/3jiod/02_3jiod_od_pattern_count_add_coordinate/out/202112_1_3jiod.geojson`,380.3MB
 - 2021年12月某日2日目
-- `https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/transportation-census/3jiod/02_3jiod_od_pattern_count_add_coordinate/out/202112_2_3jiod_od_pattern_count_add_coordinate.fgb`,248.3MB
+- `https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/transportation-census/3jiod/02_3jiod_od_pattern_count_add_coordinate/out/202112_2_3jiod.geojson`,388.0MB
 
 ### PMTiles
 - FlatGeoBuf形式の3次ODデータを[tippecanoe](https://github.com/felt/tippecanoe)で[PMTiles形式](https://github.com/protomaps/PMTiles)に変換したデータです。
