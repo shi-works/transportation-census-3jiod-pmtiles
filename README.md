@@ -1,4 +1,4 @@
-# transportation_census_3jiod_pmtiles
+# transportation-census-3jiod-pmtiles
 
 ## データの加工
 ### 3jiod_od_pattern_count.py
