@@ -24,7 +24,7 @@
 - 3次OD集計データに国土数値情報の鉄道データの駅座標を付与するプログラムです。
 - なお、駅座標データは、国土数値情報の鉄道データのラインデータを重心に変換したデータになります。
 #### 使用データ
-- 国土数値情報の鉄道データ
+- 国土数値情報の鉄道データ（重心）
 - `https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/transportation-census/3jiod/02_3jiod_od_pattern_count_add_coordinate/data/N02-21_Station_Centroid.csv`,738.0KB
 - ODパターン数の集計結果
 - 2021年12月某日1日目
