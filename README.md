@@ -1,6 +1,8 @@
 # transportation-census-3jiod-pmtiles
 
 ## デモサイト（MapLibre GL JS）
+### 3次ODデータ（2021年12月某日2日目）
+https://web-map-maplibre.s3.ap-northeast-1.amazonaws.com/transportation-census-map/index.html
 
 ## データの加工
 ### 3jiod_od_pattern_count.py
@@ -54,6 +56,6 @@
 ### PMTiles
 - FlatGeoBuf形式の3次ODデータを[tippecanoe](https://github.com/felt/tippecanoe)で[PMTiles形式](https://github.com/protomaps/PMTiles)に変換したデータです。
 - 2021年12月某日1日目
-- ``,MB
+- `https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/transportation-census/3jiod/02_3jiod_od_pattern_count_add_coordinate/out/202112_1_3jiod.pmtiles`,660.7MB
 - 2021年12月某日2日目
-- ``,MB
+- `https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/transportation-census/3jiod/02_3jiod_od_pattern_count_add_coordinate/out/202112_2_3jiod.pmtiles`,675.0MB
