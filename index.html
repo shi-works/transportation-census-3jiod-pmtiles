@@ -1,0 +1,258 @@
+<html>
+
+<head>
+    <title>大都市交通センサス 3次ODデータ</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/pmtiles@2.7.0/dist/index.js"></script>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        .map-overlay {
+            font: bold 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            position: absolute;
+            width: 200px;
+            bottom: 30px;
+            left: 0;
+            padding: 10px;
+        }
+
+        .map-overlay .map-overlay-inner {
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .map-overlay label {
+            display: block;
+            margin: 0 0 0px;
+        }
+
+        .map-overlay input {
+            background-color: transparent;
+            display: inline-block;
+            width: 100%;
+            position: relative;
+            margin: 0;
+            cursor: ew-resize;
+        }
+
+        .maplibregl-popup .maplibregl-popup-content {
+            padding: 8px 10px;
+            font: 12px/14px Arial, Helvetica, sans-serif;
+            color: black;
+            background: white;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.9);
+            border-radius: 5px;
+            width: 200px;
+            height: 180px;
+            overflow: scroll;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div class="map-overlay top">
+        <div class="map-overlay-inner">
+            <label>空中写真 不透明度: <span id="slider-opacity-value">30%</span></label>
+            <input id="slider-opacity" type="range" min="0" max="100" step="0" value="30">
+        </div>
+    </div>
+    <script type="text/javascript">
+        const map = new maplibregl.Map({
+            container: 'map',
+            style: 'https://api.maptiler.com/maps/jp-mierune-dark/style.json?key=3vP7xaDm3gASNdwulEW1',
+            hash: true,
+            zoom: 9,
+            maxZoom: 23,
+            minZoom: 4,
+            center: [139.8396, 35.7157],
+            // 既存Attributionを非表示
+            attributionControl: false
+        })
+
+        // Attributionを折りたたみ表示
+        map.addControl(new maplibregl.AttributionControl({
+            compact: true
+        }));
+
+        // ズーム・回転
+        map.addControl(new maplibregl.NavigationControl());
+
+        // フルスクリーンモードのオンオフ
+        map.addControl(new maplibregl.FullscreenControl());
+
+        // 現在位置表示
+        map.addControl(new maplibregl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: false
+            },
+            fitBoundsOptions: { maxZoom: 18 },
+            trackUserLocation: true,
+            showUserLocation: true
+        }));
+
+        // スケール表示
+        map.addControl(new maplibregl.ScaleControl({
+            maxWidth: 200,
+            unit: 'metric'
+        }));
+
+        const sliderOpactiy = document.getElementById('slider-opacity');
+        const sliderOpactiyValue = document.getElementById('slider-opacity-value');
+
+        map.on('load', () => {
+
+            // 全国最新写真（シームレス）
+            map.addSource('seamlessphoto', {
+                type: 'raster',
+                tiles: ['https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg'],
+                tileSize: 256,
+                attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html#seamlessphoto">全国最新写真（シームレス）</a>'
+            });
+
+            map.addLayer({
+                id: 'seamlessphoto',
+                type: 'raster',
+                source: 'seamlessphoto',
+                minzoom: 12,
+                maxzoom: 23,
+            });
+
+            // スライダーで空中写真レイヤの不透明度を制御
+
+            // 不透明度の初期表示
+            map.setPaintProperty(
+                'seamlessphoto',
+                'raster-opacity',
+                0.3
+            );
+
+            sliderOpactiy.addEventListener('input', (e) => {
+                map.setPaintProperty(
+                    'seamlessphoto',
+                    'raster-opacity',
+                    parseInt(e.target.value, 10) / 100
+                );
+                sliderOpactiyValue.textContent = e.target.value + '%';
+            });
+
+            // 大都市交通センサス 3次ODデータ（発生集中量）
+            map.addSource("points", {
+                type: "geojson",
+                data: "202112_1_3jiod_tripend.geojson",
+                cluster: true,
+                clusterRadius: 50,
+                clusterProperties: {
+                    // 件数に基づいてクラスタリングを行う設定
+                    "sum_count": ["+", ["get", "件数"]]
+                },
+                attribution: '<a href="https://www.mlit.go.jp/sogoseisaku/transport/sosei_transport_tk_000007.html">第13回大都市交通センサス（国土交通省）</a>'
+            });
+
+            // クラスター用のレイヤーを追加
+            map.addLayer({
+                id: 'clusters',
+                type: 'circle',
+                source: 'points',
+                filter: ['has', 'sum_count'],
+                paint: {
+                    // クラスターサイズに基づいて円の半径を変更
+                    'circle-radius': [
+                        'step',
+                        ['get', 'sum_count'],
+                        20, // 初期サイズ
+                        500000, 30, // 5000件以上の場合、半径30
+                        1000000, 40  // 10000件以上の場合、半径40
+                    ],
+                    // クラスターサイズに基づいて円の色を変更
+                    'circle-color': [
+                        'step',
+                        ['get', 'sum_count'],
+                        '#51bbd6', // 初期色
+                        500000, '#f1f075',
+                        1000000, '#f28cb1'
+                    ]
+                }
+            });
+
+            // クラスターラベル用のレイヤーを追加
+            map.addLayer({
+                id: 'cluster-count',
+                type: 'symbol',
+                source: 'points',
+                filter: ['has', 'sum_count'],
+                layout: {
+                    // 'text-field': '{sum_count}',
+                    'text-field': [
+                        'number-format', ['get', 'sum_count'], {
+                            'locale': 'en',
+                            'grouping': [3]
+                        }
+                    ],
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 12
+                },
+                paint: {
+                    'text-color': 'rgba(255, 255, 255, 1)',
+                    'text-halo-blur': 0.5,
+                    'text-halo-color': 'rgba(0, 0, 0, 1)',
+                    'text-halo-width': 1
+                }
+            });
+
+            // クラスターされていないポイント用のレイヤーを追加
+            map.addLayer({
+                id: 'unclustered-points',
+                type: 'circle',
+                source: 'points',
+                filter: ['!', ['has', 'sum_count']],
+                paint: {
+                    'circle-color': '#11b4da',
+                    'circle-radius': 4,
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': '#fff'
+                }
+            });
+
+            // 駅ラベルレイヤ
+            map.addLayer({
+                id: 'station-label',
+                type: 'symbol',
+                source: 'points',
+                minzoom: 5,
+                maxzoom: 23,
+                layout: {
+                    'text-field': ['concat', ['get', '駅名'], '\n', ['get', '件数']],
+                    'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+                    'text-size': 10,
+                    'text-offset': [0, -1.2]
+                },
+                paint: {
+                    'text-color': 'rgba(255, 255, 255, 1)',
+                    'text-halo-blur': 1,
+                    'text-halo-color': 'rgba(0, 0, 0, 1)',
+                    'text-halo-width': 2
+                }
+            });
+        })
+
+        map.showTileBoundaries = false;
+
+    </script>
+</body>
+
+</html>
