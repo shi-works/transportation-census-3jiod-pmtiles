@@ -26,10 +26,9 @@
 ### 使用データ
 - 国土数値情報の鉄道データ（重心）  
 `https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/transportation-census/3jiod/02_3jiod_od_pattern_count_add_coordinate/data/N02-21_Station_Centroid.csv`,738.0KB
-- 3次OD集計データ
-- 2021年12月某日1日目  
+- 3次OD集計データ（2021年12月某日1日目）  
 `https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/transportation-census/3jiod/01_3jiod_od_pattern_count/out/202112_1/202112_1_3jiod_od_pattern_count.csv`,60.6MB
-- 2021年12月某日2日目  
+- 3次OD集計データ（2021年12月某日2日目）  
 `https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/transportation-census/3jiod/01_3jiod_od_pattern_count/out/202112_2/202112_2_3jiod_od_pattern_count.csv`,61.9MB
 ### 出力結果
 - 2021年12月某日1日目  
