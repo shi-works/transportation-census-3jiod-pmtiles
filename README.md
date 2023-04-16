@@ -3,7 +3,7 @@
 - オープンソースソフトウェアで構築
 
 # デモサイト（MapLibre GL JS）
-- 使用データ：3次OD集計データ（2021年12月某日2日目、PMTiles形式）
+- 使用データ：3次OD集計データ（2021年12月某日2日目、PMTiles形式）※1,000トリップ以上を表示
 - https://web-map-maplibre.s3.ap-northeast-1.amazonaws.com/transportation-census-map/index.html
 - サンプル画像
 ![image](https://user-images.githubusercontent.com/71203808/232016307-b0e54eb0-0108-4e31-9ee9-4ef519ba187f.png)
