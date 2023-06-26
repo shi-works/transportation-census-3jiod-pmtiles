@@ -60,6 +60,74 @@
             height: 180px;
             overflow: scroll;
         }
+
+        th,
+        td {
+            border: solid 1px;
+            /* 枠線指定 */
+        }
+
+        table {
+            font-size: 8pt;
+            /*table-layout: fixed;*/
+            /*width: 340px;*/
+            border-collapse: collapse;
+            /* セルの線を重ねる */
+        }
+
+        .legend {
+            /*background-color: #fff;*/
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 3px;
+            bottom: 50px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.10);
+            font: 12px/14px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            padding: 10px;
+            position: absolute;
+            right: 10px;
+            z-index: 1;
+            line-height: 1.2;
+            height: auto;
+        }
+
+        .legend h4 {
+            margin: 0 0 10px;
+        }
+
+        .legend div span {
+            border-radius: 50%;
+            display: inline-block;
+            height: 15px;
+            margin-right: 10px;
+            width: 15px;
+            color: orangered
+        }
+
+        #zokusei {
+            padding: 3px 4px;
+            font: 12px/14px Arial, Helvetica, sans-serif;
+            color: black;
+            background: white;
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            width: fit-content;
+            /*width: 150px;*/
+            position: absolute;
+            /*bottom: 120px;*/
+            top: 5px;
+            z-index: 10;
+        }
+
+        #basemaps {
+            font: 12px/14px Arial, Helvetica, sans-serif;
+        }
+
+        .square {
+            width: 15px;
+            height: 5px;
+            /*border-radius: 5px;*/
+        }
     </style>
 </head>
 
@@ -72,6 +140,18 @@
         </div>
     </div>
     <script type="text/javascript">
+        let protocol = new pmtiles.Protocol();
+        maplibregl.addProtocol("pmtiles", protocol.tile);
+
+        // let PMTILES_URL = "https://pmtiles-data.s3.ap-northeast-1.amazonaws.com/transportation-census/3jiod/02_3jiod_od_pattern_count_add_coordinate/out/202112_1_3jiod.pmtiles"; // 1日目
+        let PMTILES_URL = "https://xs489works.xsrv.jp/pmtiles-data/transportation-census/3jiod/02_3jiod_od_pattern_count_add_coordinate/out/202112_2_3jiod.pmtiles"; // 2日目
+
+        const p = new pmtiles.PMTiles(PMTILES_URL)
+        p.getMetadata().then((res) => console.log(res));
+
+        // this is so we share one instance across the JS code and the map renderer
+        protocol.add(p);
+
         const map = new maplibregl.Map({
             container: 'map',
             style: 'https://api.maptiler.com/maps/jp-mierune-dark/style.json?key=3vP7xaDm3gASNdwulEW1',
@@ -150,95 +230,146 @@
                 sliderOpactiyValue.textContent = e.target.value + '%';
             });
 
-            // 大都市交通センサス 3次ODデータ（発生集中量）
-            map.addSource("points", {
-                type: "geojson",
-                data: "202112_1_3jiod_tripend.geojson",
-                cluster: true,
-                clusterRadius: 50,
-                clusterProperties: {
-                    // 件数に基づいてクラスタリングを行う設定
-                    "sum_count": ["+", ["get", "件数"]]
-                },
+            // 大都市交通センサス 3次ODデータ
+            map.addSource("pmtiles", {
+                type: "vector",
+                url: "pmtiles://" + PMTILES_URL,
                 attribution: '<a href="https://www.mlit.go.jp/sogoseisaku/transport/sosei_transport_tk_000007.html">第13回大都市交通センサス（国土交通省）</a>'
             });
 
-            // クラスター用のレイヤーを追加
+            // 大都市交通センサスラインレイヤ
             map.addLayer({
-                id: 'clusters',
-                type: 'circle',
-                source: 'points',
-                filter: ['has', 'sum_count'],
-                paint: {
-                    // クラスターサイズに基づいて円の半径を変更
-                    'circle-radius': [
-                        'step',
-                        ['get', 'sum_count'],
-                        20, // 初期サイズ
-                        500000, 30, // 5000件以上の場合、半径30
-                        1000000, 40  // 10000件以上の場合、半径40
-                    ],
-                    // クラスターサイズに基づいて円の色を変更
-                    'circle-color': [
-                        'step',
-                        ['get', 'sum_count'],
-                        '#51bbd6', // 初期色
-                        500000, '#f1f075',
-                        1000000, '#f28cb1'
-                    ]
-                }
-            });
-
-            // クラスターラベル用のレイヤーを追加
-            map.addLayer({
-                id: 'cluster-count',
-                type: 'symbol',
-                source: 'points',
-                filter: ['has', 'sum_count'],
-                layout: {
-                    // 'text-field': '{sum_count}',
-                    'text-field': [
-                        'number-format', ['get', 'sum_count'], {
-                            'locale': 'en',
-                            'grouping': [3]
-                        }
-                    ],
-                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                    'text-size': 12
+                'id': 'pmtiles-line-1',
+                'type': 'line',
+                'source': 'pmtiles',
+                // "source-layer": "202112_1_3jiod", // 1日目
+                "source-layer": "202112_2_3jiod", // 2日目
+                'layout': {
+                    //'line-join': 'bevel',
+                    'line-cap': 'round'
                 },
+                'paint': {
+                    'line-width': [
+                        'step',
+                        ['get', '件数'],
+                        0.75,               // 0 ～ 2000 未満のデフォルトの太さ
+                        2000, 10,           // 2000 以上 ～ 5000 未満の太さ
+                        5000, 20,           // 5000 以上 ～ 10000 未満の太さ
+                        10000, 30,          // 10000 以上 ～ 15000 未満の太さ
+                        15000, 40,          // 15000 以上 ～ 20000 未満の太さ
+                        20000, 50           // 20000以上
+                    ],
+                    // 'line-width': 15,
+                    'line-color': 'rgba(0, 112, 32, 0.3)',
+                    'line-blur': 0.8,
+                    'line-offset': 0.5
+                },
+                'filter': ['>=', ['get', '件数'], 1000]
+            });
+
+            map.addLayer({
+                'id': 'pmtiles-line-2',
+                'type': 'line',
+                'source': 'pmtiles',
+                // "source-layer": "202112_1_3jiod", // 1日目
+                "source-layer": "202112_2_3jiod", // 2日目
+                'layout': {
+                    //'line-join': 'bevel',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-width': [
+                        'step',
+                        ['get', '件数'],
+                        0.5,
+                        2000, 5,
+                        5000, 15,
+                        10000, 25,
+                        15000, 35,
+                        20000, 45
+                    ],
+                    // 'line-width': 7,
+                    'line-color': 'rgba(0, 172, 64, 0.6)',
+                    'line-blur': 0.4,
+                    'line-offset': 0.5
+                },
+                'filter': ['>=', ['get', '件数'], 1000]
+            });
+
+            map.addLayer({
+                'id': 'pmtiles-line-3',
+                'type': 'line',
+                'source': 'pmtiles',
+                // "source-layer": "202112_1_3jiod", // 1日目
+                "source-layer": "202112_2_3jiod", // 2日目
+                'layout': {
+                    //'line-join': 'bevel',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-width': [
+                        'step',
+                        ['get', '件数'],
+                        0.25,
+                        2000, 1,
+                        5000, 10,
+                        10000, 20,
+                        15000, 30,
+                        20000, 40
+                    ],
+                    // 'line-width': 2,
+                    'line-color': 'rgba(220, 236, 220, 1)',
+                    'line-offset': 0.5
+                },
+                'filter': ['>=', ['get', '件数'], 1000]
+            });
+
+            // 駅データ
+            map.addSource('station', {
+                type: 'geojson',
+                data: './N02-21_Station_Centroid.geojson'
+            });
+
+            // 駅ポイントレイヤ
+            /*
+            map.addLayer({
+                id: 'station-point-1',
+                type: 'circle',
+                source: 'station',
+                minzoom: 5,
+                maxzoom: 23,
                 paint: {
-                    'text-color': 'rgba(255, 255, 255, 1)',
-                    'text-halo-blur': 0.5,
-                    'text-halo-color': 'rgba(0, 0, 0, 1)',
-                    'text-halo-width': 1
+                    'circle-color': 'rgba(255, 255, 255, 1)',
+                    'circle-blur': 1,
+                    'circle-radius': 12
                 }
             });
 
-            // クラスターされていないポイント用のレイヤーを追加
+            // 駅ポイントレイヤ
             map.addLayer({
-                id: 'unclustered-points',
+                id: 'station-point-2',
                 type: 'circle',
-                source: 'points',
-                filter: ['!', ['has', 'sum_count']],
+                source: 'station',
+                minzoom: 5,
+                maxzoom: 23,
                 paint: {
-                    'circle-color': '#11b4da',
-                    'circle-radius': 4,
-                    'circle-stroke-width': 1,
-                    'circle-stroke-color': '#fff'
+                    'circle-color': 'rgba(255, 0, 255, 1)',
+                    'circle-radius': 6
                 }
             });
+            */
 
             // 駅ラベルレイヤ
             map.addLayer({
                 id: 'station-label',
                 type: 'symbol',
-                source: 'points',
+                source: 'station',
                 minzoom: 5,
                 maxzoom: 23,
                 layout: {
-                    'text-field': ['concat', ['get', '駅名'], '\n', ['get', '件数']],
+                    'text-field': ['get', 'N02_005'],
                     'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-                    'text-size': 10,
+                    'text-size': 9,
                     'text-offset': [0, -1.2]
                 },
                 paint: {
@@ -251,6 +382,56 @@
         })
 
         map.showTileBoundaries = false;
+
+        map.on('click', 'pmtiles-line-1', (e) => {
+            var lng = e.lngLat.lng;
+            var lat = e.lngLat.lat;
+            var nyujojigyoshamei = e.features[0].properties['入場事業者名'];
+            var nyujorosemmei = e.features[0].properties['入場路線名'];
+            var nyujoekimei = e.features[0].properties['入場駅名'];
+            var shutsujojigyoshamei = e.features[0].properties['出場事業者名'];
+            var shutsujorosemmei = e.features[0].properties['出場路線名'];
+            var shutsujoekimei = e.features[0].properties['出場駅名'];
+            var kensu = e.features[0].properties['件数'];
+
+            new maplibregl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(
+                    // 表形式
+                    '<table ' + 'style="font-size: 8pt; table-layout: auto;"' + '>' +
+                    '<tr>' +
+                    '<th overflow: hidden;>' + '項目' + '</th> ' + '<th overflow: hidden;>' + '内容' + '</th> ' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<td>' + '入場事業者名' + '</td> ' + '<td>' + nyujojigyoshamei + '</td> ' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<td>' + '入場路線名' + '</td> ' + '<td>' + nyujorosemmei + '</td> ' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<td>' + '入場駅名' + '</td> ' + '<td>' + nyujoekimei + '</td> ' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<td>' + '出場事業者名' + '</td> ' + '<td>' + shutsujojigyoshamei + '</td> ' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<td>' + '出場路線名' + '</td> ' + '<td>' + shutsujorosemmei + '</td> ' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<td>' + '出場駅名' + '</td> ' + '<td>' + shutsujoekimei + '</td> ' +
+                    '</tr>' +
+                    '<tr>' +
+                    '<td>' + '件数' + '</td> ' + '<td>' + kensu + '</td> ' +
+                    '</tr>' +
+                    '<table>'
+                    /*
+                    + '座標: ' + lat.toFixed(7) + "," + lng.toFixed(7) + ' ※クリック位置の座標<br>'
+                    + '<a href=\https://www.google.com/maps?q=' + lat + "," + lng + "&hl=ja' target='_blank'>🌎Google Maps</a>" + ' '
+                    + '<a href=\https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=' + lat + "," + lng + "&hl=ja' target='_blank'>📷Street View</a>"
+                    */
+                )
+                .addTo(map);
+        });
 
     </script>
 </body>
